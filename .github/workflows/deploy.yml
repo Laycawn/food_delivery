@@ -1,0 +1,64 @@
+name:name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push User Service image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./user_service
+          push: true
+          tags: 192.168.52.131:8000/user_service:latest
+
+      - name: Build and push Order Service image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./order_service
+          push: true
+          tags: 192.168.52.131:8001/order_service:latest
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.3'
+
+      - name: Install dependencies and run tests
+        run: |
+          pip install -r user_service/requirements.txt
+          pip install -r order_service/requirements.txt
+          pytest user_service/tests/
+          pytest order_service/tests/
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: 'latest'
+
+      - name: Configure kubeconfig
+        run: |
+          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f k8s/ CI/CD Pipeline
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build-test-push:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+     
