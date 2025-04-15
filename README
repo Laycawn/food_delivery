@@ -1,0 +1,102 @@
+Food Delivery Microservices
+A modular food delivery application built with a microservices architecture. This project demonstrates how to build, run, and deploy independent services (such as user and order management) using Docker, Kubernetes, and a local container registry.
+
+Table of Contents
+Overview
+
+Architecture
+
+Services
+
+Requirements
+
+Setup & Usage
+
+Testing
+
+CI/CD
+
+Troubleshooting
+
+Contributing
+
+License
+
+Overview
+This project is a sample food delivery platform composed of multiple microservices. Each service is independently developed, containerized, and orchestrated using Kubernetes. The goal is to provide a practical example of microservices deployment, local Docker registry usage, and CI/CD integration.
+
+Architecture
+Microservices: Each core function (user, order, etc.) is a separate service.
+
+Docker: Each service is containerized for consistency and portability.
+
+Kubernetes: Manages deployment, scaling, and networking of services.
+
+Local Docker Registry: Used for storing and retrieving service images during development and deployment.
+
+CI/CD: GitHub Actions is used for code checks and automation (see CI/CD).
+
+Services
+User Service: Handles user registration, authentication, and profile management.
+
+Order Service: Manages order creation, tracking, and history.
+
+Each service has its own directory with source code, Dockerfile, and tests.
+
+Requirements
+Docker (with access to a local registry)
+
+Minikube (or another Kubernetes cluster)
+
+kubectl
+
+Python 3.9+ (for the services)
+
+Git
+
+Setup & Usage
+1. Clone the Repository
+bash
+git clone https://github.com/<your-username>/food_delivery.git
+cd food_delivery
+2. Build and Push Docker Images Locally
+bash
+docker build -t 192.168.52.131:8000/user_service:latest ./user_service
+docker push 192.168.52.131:8000/user_service:latest
+
+docker build -t 192.168.52.131:8001/order_service:latest ./order_service
+docker push 192.168.52.131:8001/order_service:latest
+Update the registry IP and port as needed for your environment.
+
+3. Update Kubernetes Manifests
+Ensure k8s/ deployment YAMLs reference the correct image names.
+
+4. Deploy to Kubernetes
+bash
+kubectl apply -f k8s/
+Testing
+Each service contains its own tests. To run tests locally:
+
+bash
+pip install -r user_service/requirements.txt
+pytest user_service/tests/
+
+pip install -r order_service/requirements.txt
+pytest order_service/tests/
+CI/CD
+GitHub Actions is configured for code checks and automation.
+
+Building and pushing images to a local registry must be done manually or via a local script, as cloud runners cannot access your local network.
+
+See .github/workflows/deploy.yml for details.
+
+Troubleshooting
+Docker Push Fails in CI: GitHub Actions runners cannot access your local registry. Build and push images from your own machine.
+
+Kubernetes Image Pull Errors: Ensure your cluster nodes can access your local registry and that images are correctly tagged and pushed.
+
+Contributing
+Contributions are welcome! Please open issues or submit pull requests for improvements or bug fixes.
+
+License
+This project is licensed under the MIT License
